@@ -12,6 +12,7 @@ START_YEAR = 2016
 END_YEAR = 2026
 EMAIL = "your mail"
 API_KEY = "your key"
+
 REQUEST_DELAY = 0.1 if API_KEY else 0.5
 
 os.makedirs(BASE_OUTPUT_DIR, exist_ok=True)
@@ -115,7 +116,6 @@ def fetch_and_download(year, month):
     all_pmc_ids.sort()
     total_pmc = len(all_pmc_ids)
 
-    # خروجی هدر ماه
     print(f"\n--- {year}-{month:02d} | Total in month: {total_pmc} ---")
 
     processed = 0
@@ -128,7 +128,6 @@ def fetch_and_download(year, month):
             continue
 
         status = download_or_copy(pmcid, year, month)
-        # خروجی پیشرفت در یک خط
         sys.stdout.write(f"\rProgress: {processed}/{total_pmc} | {status}: PMC{pmcid}                ")
         sys.stdout.flush()
 
@@ -136,24 +135,20 @@ def fetch_and_download(year, month):
             save_status(year, month, pmcid)
 
     save_status(year, month, "DONE")
-    print("")  # ایجاد فاصله برای شروع تمیز ماه بعدی
+    print("")
 
 
 if __name__ == "__main__":
-    # ۱. ابتدا ببین آخرین بار کجا بودیم
     res_year, res_month, last_id = get_last_status()
 
-    # تبدیل به عدد برای مقایسه راحت‌تر
     start_y = int(res_year) if (res_year and res_year.isdigit()) else START_YEAR
     start_m = int(res_month) if (res_month and res_month.isdigit()) else 1
 
     for year in range(START_YEAR, END_YEAR + 1):
-        # اگر سال کمتر از سالِ رزومه است، کلاً این سال را رد کن
         if year < start_y:
             continue
 
         for month in range(1, 13):
-            # اگر در سالِ رزومه هستیم، ماه‌های قبل از ماهِ توقف را رد کن
             if year == start_y and month < start_m:
                 continue
 
